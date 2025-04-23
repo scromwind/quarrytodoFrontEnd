@@ -59,9 +59,12 @@ async function ValidarCredenciales(){
     })
     let datos = await ConsultaCredenciales(json);
     
-    if(datos !== false && datos !== null){
+    if(datos !== null){
         localStorage.setItem('idSesion',datos.id);
-        ConstruirListarTareas();    
+        alert("inicio Sesion Correctamente")
+        //ConstruirListarTareas();    
+    }else{
+        alert("problema al iniciar sesion o datos incorrectos")
     }
     
 }
