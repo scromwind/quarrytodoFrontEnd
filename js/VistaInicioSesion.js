@@ -28,7 +28,7 @@ export function VistaInicioSesion(){
 
 async function ConsultaCredenciales(json) {
     try {
-      const response = await fetch('http://localhost:8080/usuarios/iniciarSesion', {
+      const response = await fetch('https://quarrytodobackend-production.up.railway.app', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
