@@ -33,7 +33,7 @@ export function VistaFormularioUsuario(){
 
 async function CrearUsuario(json){
     try{
-        const respuesta = await fetch('https://quarrytodobackend-production.up.railway.app/usuarios/crear',{
+        const respuesta = await fetch('http://localhost:8080/usuarios/crear',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

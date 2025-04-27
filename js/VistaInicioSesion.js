@@ -28,20 +28,27 @@ export function VistaInicioSesion(){
 
 async function ConsultaCredenciales(json) {
     try {
-      const response = await fetch('https://quarrytodobackend-production.up.railway.app', {
+      const response = await fetch('http://localhost:8080/usuarios/iniciarSesion', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: json
       });
-      if(response !== null || response !== undefined){
+      
+      if(!response.ok){
+        console.error("error ",response.status)
       }
-      const datos = await response.json();
 
-      if(response.ok){
-        return datos;
+      const datos = await response.text();
+
+      if(datos){
+        return JSON.parse(datos);
+      }else{
+        console.warn("Respuesta vacia");
+        return null;
       }
+
 
     } catch (error) {
       console.error('Error a el iniciar sesion', error);
@@ -59,10 +66,9 @@ async function ValidarCredenciales(){
     })
     let datos = await ConsultaCredenciales(json);
     
-    if(datos !== null){
+    if(datos && datos.id){
         localStorage.setItem('idSesion',datos.id);
-        alert("inicio Sesion Correctamente")
-        //ConstruirListarTareas();    
+        ConstruirListarTareas();    
     }else{
         alert("problema al iniciar sesion o datos incorrectos")
     }

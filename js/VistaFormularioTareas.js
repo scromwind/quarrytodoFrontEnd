@@ -2,7 +2,7 @@ import { ConstruirListarTareas } from "./ControlVistas.js";
 
 async function GuardarTarea(json) {
   try {
-    const response = await fetch('http://localhost:8080/tareas/crear', {
+    const response = await fetch('http://localhost:8080/tareas/crearTarea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -33,6 +33,7 @@ async function CrearTarea() {
 
   const ok = await GuardarTarea(json);
 
+  console.log("la respuesta del server es esta: ",ok)
   if (ok) {
     alert("Tarea creada con éxito");
     return true;
@@ -44,6 +45,7 @@ async function CrearTarea() {
 
 
 export function VistaCrearTarea(tarea){
+  console.log(tarea)
   let vista;
   if (tarea !== null){
     vista = document.createElement("div");

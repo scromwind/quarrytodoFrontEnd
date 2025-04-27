@@ -1,4 +1,4 @@
-import { ConstruirCrearTareas, ConstruirInicioSesion } from "./ControlVistas.js";
+import { ConstruirCrearTareas, ConstruirInicioSesion, ConstruirListarTareas } from "./ControlVistas.js";
 
 // Genera la vista del HTML
 export function VistaListaTareas() {
@@ -34,16 +34,15 @@ export function VistaListaTareas() {
 // Trae los datos de la base de datos por medio de APIRest
 export async function BuscarTareas() {
   let lista = [];
+  let usuarioId= localStorage.getItem('idSesion');
 
   try {
-    const respuesta = await fetch('http://localhost:8080/tareas/listar', {
+    const respuesta = await fetch('http://localhost:8080/tareas/listaTareas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        id: localStorage.getItem('idSesion')
-      })
+      body: JSON.stringify(usuarioId)
     });
 
     if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
@@ -55,7 +54,7 @@ export async function BuscarTareas() {
     
 
   } catch (error) {
-    console.error("Hubo un problema con la consulta a la API:", error);
+    console.log("Hubo un problema con la consulta a la API: ",respuesta);
   }
 
   return lista;
@@ -63,6 +62,7 @@ export async function BuscarTareas() {
 
 // Llena la tabla con las tareas
 function LlenarTabla(listaTareas) {
+  console.log(listaTareas)
   let Tareas = document.getElementById("tablaTareas");
 
   if (Tareas != null) {
@@ -104,41 +104,40 @@ function LlenarTabla(listaTareas) {
 }
 
 // Finaliza la tarea seleccionada
-export function FinalizarTarea(id) {
-  fetch('http://localhost:8080/tareas/finalizar', {
+export async function FinalizarTarea(id) {
+  let response = await fetch('http://localhost:8080/tareas/finalizar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
     },
-    body: JSON.stringify({ id: id }) // Convertir datos a JSON
+    body: JSON.stringify(id) // Convertir datos a JSON
   })
-  .then(response => response.json()) // Convertir respuesta a JSON
-  .then(() => {
-    alert("Se finalizó la tarea con éxito");
-    BuscarTareas(); // Vuelvo a cargar las tareas
-  })
-  .catch(error => console.error('Error:', error)); // Manejar error
+
+  let texto = await response.text();
+
+  if(response.ok){
+    ConstruirListarTareas();
+    alert(texto);
+  }else{
+    alert(texto);
+  }
+   
+
 }
 
 export async function EditarTarea(id) {
+  
   const respuesta = await fetch('http://localhost:8080/tareas/buscar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
     },
-    body: JSON.stringify({ id: id }) // Convertir datos a JSON
+    body: JSON.stringify(id) // Convertir datos a JSON
   })
-  .catch(error => console.error('Error:', error)); // Manejar error
-
-  if(respuesta !== undefined || respuesta !== null){
-    if (respuesta){
-      let json = await respuesta.json();
-      if(json)
-        ConstruirCrearTareas(json);
-    }else{
-      console.log("no se encontró tarea");
-    }
-  }
+  
+  let datos = await respuesta.json();
+  console.log(datos);
+  ConstruirCrearTareas(datos);
 }
 
 // Elimina la tarea seleccionada
@@ -148,17 +147,15 @@ export async function EliminarTarea(id) {
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
     },
-    body: JSON.stringify({ id: id }) // Convertir datos a JSON
+    body: JSON.stringify(id) // Convertir datos a JSON
   })
-  .catch(error => console.error('Error:', error)); // Manejar error
-
-  if(respuesta !== undefined || respuesta !== null){
-    if (respuesta){
-      console.log("Eliminado con exito");
-      BuscarTareas();
-    }else{
-      console.log("no se elimino la tarea");
-    }
+  
+  const mensaje = await respuesta.text();
+  if(respuesta.ok){
+    alert(mensaje);
+    ConstruirListarTareas();
+  }else{
+    alert(mensaje);
   }
 }
 
