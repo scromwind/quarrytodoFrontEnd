@@ -1,5 +1,8 @@
 import { ConstruirInicioSesion } from "./ControlVistas.js";
 
+const urlLocal = 'http://localhost:8080'
+const urlpublica = 'https://quarrytodobackend-production.up.railway.app'
+
 export function VistaFormularioUsuario(){
     let vista = document.createElement('div');
     vista.id = "formularioUsuario"
@@ -33,7 +36,7 @@ export function VistaFormularioUsuario(){
 
 async function CrearUsuario(json){
     try{
-        const respuesta = await fetch('http://localhost:8080/usuarios/crear',{
+        const respuesta = await fetch(urlpublica+'/usuarios/crear',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

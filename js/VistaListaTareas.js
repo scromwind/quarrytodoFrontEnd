@@ -1,5 +1,7 @@
 import { ConstruirCrearTareas, ConstruirInicioSesion, ConstruirListarTareas } from "./ControlVistas.js";
 
+const urlLocal = 'http://localhost:8080'
+const urlpublica = 'https://quarrytodobackend-production.up.railway.app'
 // Genera la vista del HTML
 export function VistaListaTareas() {
   let vista = document.createElement('div');
@@ -21,6 +23,8 @@ export function VistaListaTareas() {
       </table>
     </div>
 
+    <div id="mensajeSinTareas"></div>
+
     <div class="d-flex gap-2 mt-3">
       <button type="button" class="btn btn-success" id="btnNuevaTarea">Añadir Tarea</button>
       <button type="button" class="btn btn-danger" id="btnCerrarSesion">Cerrar Sesion</button>
@@ -37,7 +41,7 @@ export async function BuscarTareas() {
   let usuarioId= localStorage.getItem('idSesion');
 
   try {
-    const respuesta = await fetch('http://localhost:8080/tareas/listaTareas', {
+    const respuesta = await fetch(urlpublica+'/tareas/listaTareas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,14 +49,12 @@ export async function BuscarTareas() {
       body: JSON.stringify(usuarioId)
     });
 
-    if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
-
-    lista = await respuesta.json();
-    if(lista !== null && lista !== undefined){
-      LlenarTabla(lista); // Aquí se llena la tabla correctamente
+    if(respuesta.ok){
+      lista = await respuesta.json();
+      LlenarTabla(lista); 
+    }else{
+      ListaVacia();
     }
-    
-
   } catch (error) {
     console.log("Hubo un problema con la consulta a la API: ",respuesta);
   }
@@ -60,12 +62,25 @@ export async function BuscarTareas() {
   return lista;
 }
 
+function ListaVacia(){
+  let tarea = document.getElementById("tablaTareas");
+  let mensaje = document.getElementById("mensajeSinTareas")
+
+  if(tarea != null && mensaje != null){
+    tarea.innerHTML="";
+    mensaje.innerHTML=""
+    mensaje.appendChild('<p>Sin tareas por mostrar</p>');
+  }
+
+}
+
 // Llena la tabla con las tareas
 function LlenarTabla(listaTareas) {
-  console.log(listaTareas)
   let Tareas = document.getElementById("tablaTareas");
+  let mensaje = document.getElementById("mensajeSinTareas")
 
-  if (Tareas != null) {
+  if (Tareas != null && mensaje != null) {
+    mensaje.innerHTML=""
     Tareas.innerHTML=""
     listaTareas.forEach(tarea => {
       const row = document.createElement("tr");
@@ -105,7 +120,7 @@ function LlenarTabla(listaTareas) {
 
 // Finaliza la tarea seleccionada
 export async function FinalizarTarea(id) {
-  let response = await fetch('http://localhost:8080/tareas/finalizar', {
+  let response = await fetch(urlpublica+'/finalizar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -127,7 +142,7 @@ export async function FinalizarTarea(id) {
 
 export async function EditarTarea(id) {
   
-  const respuesta = await fetch('http://localhost:8080/tareas/buscar', {
+  const respuesta = await fetch(urlpublica+'/tareas/buscar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -135,14 +150,18 @@ export async function EditarTarea(id) {
     body: JSON.stringify(id) // Convertir datos a JSON
   })
   
-  let datos = await respuesta.json();
-  console.log(datos);
-  ConstruirCrearTareas(datos);
+  if(respuesta.ok){
+    let datos = await respuesta.json();
+    ConstruirCrearTareas(datos);
+  }else{
+    alert("El servidor no encontro la tarea");
+  }
+  
 }
 
 // Elimina la tarea seleccionada
 export async function EliminarTarea(id) {
-  const respuesta = await fetch('http://localhost:8080/tareas/eliminar', {
+  const respuesta = await fetch(urlpublica+'/tareas/eliminar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON

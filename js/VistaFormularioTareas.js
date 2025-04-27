@@ -2,7 +2,7 @@ import { ConstruirListarTareas } from "./ControlVistas.js";
 
 async function GuardarTarea(json) {
   try {
-    const response = await fetch('http://localhost:8080/tareas/crearTarea', {
+    const response = await fetch(urlpublica+'/tareas/crearTarea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -10,7 +10,7 @@ async function GuardarTarea(json) {
       body: json
     });
 
-    return response.ok; // true si el status es 2xx
+    return response.ok;
   } catch (error) {
     console.error('Error al guardar la tarea:', error);
     return false;
