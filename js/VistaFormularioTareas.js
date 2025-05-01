@@ -1,8 +1,11 @@
 import { ConstruirListarTareas } from "./ControlVistas.js";
 
+const urlLocal = 'http://localhost:8080'
+const urlpublica = 'https://quarrytodobackend-production.up.railway.app'
+
 async function GuardarTarea(json) {
   try {
-    const response = await fetch(urlpublica+'/tareas/crearTarea', {
+    const response = await fetch(urlLocal+'/tareas/crearTarea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,7 +48,6 @@ async function CrearTarea() {
 
 
 export function VistaCrearTarea(tarea){
-  console.log(tarea)
   let vista;
   if (tarea !== null){
     vista = document.createElement("div");

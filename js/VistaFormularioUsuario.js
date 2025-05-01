@@ -36,7 +36,7 @@ export function VistaFormularioUsuario(){
 
 async function CrearUsuario(json){
     try{
-        const respuesta = await fetch(urlpublica+'/usuarios/crear',{
+        const respuesta = await fetch(urlLocal+'/usuarios/crear',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

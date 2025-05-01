@@ -18,17 +18,43 @@ export function VistaListaTareas() {
             <th colspan="3" scope="col">Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaTareas">
+        <tbody id="tablaTareasPendientes">
         </tbody>
       </table>
     </div>
 
-    <div id="mensajeSinTareas"></div>
+    <div id="mensajeSinTareasPendientes"></div>
 
     <div class="d-flex gap-2 mt-3">
       <button type="button" class="btn btn-success" id="btnNuevaTarea">Añadir Tarea</button>
+    </div>
+
+    <br>
+
+    <h2>Lista de Tareas Completadas</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+          <tr>
+            <th scope="col">Título</th>
+            <th scope="col">Descripción</th>
+            <th colspan="3" scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaTareasFinalizadas">
+        </tbody>
+      </table>
+    </div>
+
+    <div id="mensajeSinTareasFinalizadas"></div>
+
+    <div class="d-flex gap-2 mt-3">
       <button type="button" class="btn btn-danger" id="btnCerrarSesion">Cerrar Sesion</button>
     </div>
+
+    <br>
+    <br>
+
   </div>
 `;
 
@@ -37,11 +63,11 @@ export function VistaListaTareas() {
 
 // Trae los datos de la base de datos por medio de APIRest
 export async function BuscarTareas() {
-  let lista = [];
-  let usuarioId= localStorage.getItem('idSesion');
+  let listaPendientes = [];
+  let listaTareasFinalizadas=[];
+  let usuarioId= Number(localStorage.getItem('idSesion'));
 
-  try {
-    const respuesta = await fetch(urlpublica+'/tareas/listaTareas', {
+    const respuestaPendientes = await fetch(urlLocal+'/tareas/listaTareasPendientes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -49,39 +75,38 @@ export async function BuscarTareas() {
       body: JSON.stringify(usuarioId)
     });
 
-    if(respuesta.ok){
-      lista = await respuesta.json();
-      LlenarTabla(lista); 
+    const respuestaFinalizadas = await fetch(urlLocal+'/tareas/listaTareasFinalizadas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(usuarioId)
+    });
+
+    if(respuestaPendientes.status===200){
+      listaPendientes = await respuestaPendientes.json();      
+      LlenarTablaPendientes(listaPendientes); 
     }else{
-      ListaVacia();
+      LlenarTablaPendientes(null);
     }
-  } catch (error) {
-    console.log("Hubo un problema con la consulta a la API: ",respuesta);
-  }
 
-  return lista;
-}
-
-function ListaVacia(){
-  let tarea = document.getElementById("tablaTareas");
-  let mensaje = document.getElementById("mensajeSinTareas")
-
-  if(tarea != null && mensaje != null){
-    tarea.innerHTML="";
-    mensaje.innerHTML=""
-    mensaje.appendChild('<p>Sin tareas por mostrar</p>');
-  }
+    if(respuestaFinalizadas.status===200){
+      listaTareasFinalizadas= await respuestaFinalizadas.json();  
+      LlenarTablaFinalizadas(listaTareasFinalizadas); 
+    }else{
+      LlenarTablaFinalizadas(null);
+    }
 
 }
 
 // Llena la tabla con las tareas
-function LlenarTabla(listaTareas) {
-  let Tareas = document.getElementById("tablaTareas");
-  let mensaje = document.getElementById("mensajeSinTareas")
+async function LlenarTablaPendientes(listaTareas) {
+  let tareas = document.getElementById("tablaTareasPendientes");
+  let mensaje = document.getElementById("mensajeSinTareasPendientes");
 
-  if (Tareas != null && mensaje != null) {
+  if (tareas != null && mensaje != null && listaTareas !=null) {
     mensaje.innerHTML=""
-    Tareas.innerHTML=""
+    tareas.innerHTML=""
     listaTareas.forEach(tarea => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -91,17 +116,17 @@ function LlenarTabla(listaTareas) {
           <button type="button" class="btn btn-success btn-sm btnFinalizarTarea" data-id="${tarea.id}">Finalizar</button>
         </td>
         <td>
-          <button type="button" class="btn btn-warning btn-sm btnEditarTarea" data-id="${tarea.id}">Editar</button>
+          <button type="button" class="btn btn-primary btn-sm btnEditarTarea" data-id="${tarea.id}">Editar</button>
         </td>
         <td>
           <button type="button" class="btn btn-danger btn-sm btnEliminarTarea" data-id="${tarea.id}">Eliminar</button>
         </td>
       `;
-      Tareas.appendChild(row);
+      tareas.appendChild(row);
     });
 
     // Delegar el evento al contenedor de las tareas (tbody)
-    Tareas.addEventListener('click', function(event) {
+    tareas.addEventListener('click', function(event) {
       if (event.target && event.target.classList.contains('btnFinalizarTarea')) {
         let tareaid = event.target.getAttribute('data-id');
         FinalizarTarea(tareaid); // Llamamos a la función que finaliza la tarea
@@ -115,12 +140,49 @@ function LlenarTabla(listaTareas) {
         EliminarTarea(tareaid);
       }
     });
+  }else{
+    mensaje.innerHTML=""
+    tareas.innerHTML=""
+    mensaje.innerHTML="<p>Sin tareas Pendientes por mostrar</p>"
+  }
+}
+
+async function LlenarTablaFinalizadas(listaTareas) {
+  let tareas = document.getElementById("tablaTareasFinalizadas");
+  let mensaje = document.getElementById("mensajeSinTareasFinalizadas");
+
+  if (tareas != null && mensaje != null && listaTareas !=null) {
+    mensaje.innerHTML=""
+    tareas.innerHTML=""
+    listaTareas.forEach(tarea => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${tarea.titulo}</td>
+        <td>${tarea.descripcion}</td>
+        <td>
+          <button type="button" class="btn btn-warning btn-sm btnNoCompletada" data-id="${tarea.id}">Incompleta</button>
+        </td>
+      `;
+      tareas.appendChild(row);
+    });
+
+    // Delegar el evento al contenedor de las tareas (tbody)
+    tareas.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('btnNoCompletada')) {
+        let tareaid = event.target.getAttribute('data-id');
+        TareaPendiente(tareaid); // Llamamos a la función que finaliza la tarea
+      }
+    });
+  }else{
+    mensaje.innerHTML=""
+    tareas.innerHTML=""
+    mensaje.innerHTML="<p>Sin tareas completadas por mostrar</p>"
   }
 }
 
 // Finaliza la tarea seleccionada
 export async function FinalizarTarea(id) {
-  let response = await fetch(urlpublica+'/finalizar', {
+  let response = await fetch(urlLocal+'/tareas/finalizar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -136,13 +198,11 @@ export async function FinalizarTarea(id) {
   }else{
     alert(texto);
   }
-   
-
 }
 
 export async function EditarTarea(id) {
   
-  const respuesta = await fetch(urlpublica+'/tareas/buscar', {
+  const respuesta = await fetch(urlLocal+'/tareas/buscar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -161,7 +221,7 @@ export async function EditarTarea(id) {
 
 // Elimina la tarea seleccionada
 export async function EliminarTarea(id) {
-  const respuesta = await fetch(urlpublica+'/tareas/eliminar', {
+  const respuesta = await fetch(urlLocal+'/tareas/eliminar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -175,6 +235,26 @@ export async function EliminarTarea(id) {
     ConstruirListarTareas();
   }else{
     alert(mensaje);
+  }
+}
+
+// Devuelve la tarea a pendiente
+export async function TareaPendiente(id) {
+  let response = await fetch(urlLocal+'/tareas/tareaPendiente', {
+    method: 'POST',  // Método de la solicitud
+    headers: {
+      'Content-Type': 'application/json' // Tipo de contenido JSON
+    },
+    body: JSON.stringify(id) // Convertir datos a JSON
+  })
+
+  let texto = await response.text();
+
+  if(response.ok){
+    ConstruirListarTareas();
+    alert(texto);
+  }else{
+    alert(texto);
   }
 }
 

@@ -31,7 +31,7 @@ export function VistaInicioSesion(){
 
 async function ConsultaCredenciales(json) {
     try {
-      const response = await fetch(urlpublica+'/usuarios/iniciarSesion', {
+      const response = await fetch(urlLocal+'/usuarios/iniciarSesion', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
