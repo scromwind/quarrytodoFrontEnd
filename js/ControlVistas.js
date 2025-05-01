@@ -5,6 +5,7 @@ import { VistaFormularioUsuario,EventosFormularioUsuario } from "./VistaFormular
 import { VistaInicioSesion,EventosIniciSesion } from "./VistaInicioSesion.js";
 
 //Variables
+window.urlWeb = 'https://quarrytodobackend-production.up.railway.app'
 const mainContainer = document.getElementById("container");
 var sesionIniciada = localStorage.getItem('idSesion')
 

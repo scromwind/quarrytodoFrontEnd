@@ -67,7 +67,7 @@ export async function BuscarTareas() {
   let listaTareasFinalizadas=[];
   let usuarioId= Number(localStorage.getItem('idSesion'));
 
-    const respuestaPendientes = await fetch(urlLocal+'/tareas/listaTareasPendientes', {
+    const respuestaPendientes = await fetch(window.urlWeb+'/tareas/listaTareasPendientes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ export async function BuscarTareas() {
       body: JSON.stringify(usuarioId)
     });
 
-    const respuestaFinalizadas = await fetch(urlLocal+'/tareas/listaTareasFinalizadas', {
+    const respuestaFinalizadas = await fetch(window.urlWeb+'/tareas/listaTareasFinalizadas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -182,7 +182,7 @@ async function LlenarTablaFinalizadas(listaTareas) {
 
 // Finaliza la tarea seleccionada
 export async function FinalizarTarea(id) {
-  let response = await fetch(urlLocal+'/tareas/finalizar', {
+  let response = await fetch(window.urlWeb+'/tareas/finalizar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -202,7 +202,7 @@ export async function FinalizarTarea(id) {
 
 export async function EditarTarea(id) {
   
-  const respuesta = await fetch(urlLocal+'/tareas/buscar', {
+  const respuesta = await fetch(window.urlWeb+'/tareas/buscar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -221,7 +221,7 @@ export async function EditarTarea(id) {
 
 // Elimina la tarea seleccionada
 export async function EliminarTarea(id) {
-  const respuesta = await fetch(urlLocal+'/tareas/eliminar', {
+  const respuesta = await fetch(window.urlWeb+'/tareas/eliminar', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON
@@ -240,7 +240,7 @@ export async function EliminarTarea(id) {
 
 // Devuelve la tarea a pendiente
 export async function TareaPendiente(id) {
-  let response = await fetch(urlLocal+'/tareas/tareaPendiente', {
+  let response = await fetch(window.urlWeb+'/tareas/tareaPendiente', {
     method: 'POST',  // Método de la solicitud
     headers: {
       'Content-Type': 'application/json' // Tipo de contenido JSON

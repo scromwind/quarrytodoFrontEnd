@@ -1,11 +1,8 @@
 import { ConstruirListarTareas } from "./ControlVistas.js";
 
-const urlLocal = 'http://localhost:8080'
-const urlpublica = 'https://quarrytodobackend-production.up.railway.app'
-
 async function GuardarTarea(json) {
   try {
-    const response = await fetch(urlLocal+'/tareas/crearTarea', {
+    const response = await fetch(window.urlWeb+'/tareas/crearTarea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

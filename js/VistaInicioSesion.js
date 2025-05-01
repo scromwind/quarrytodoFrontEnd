@@ -1,8 +1,5 @@
 import { ConstruirFormularioUsuario, ConstruirListarTareas } from "./ControlVistas.js";
 
-const urlLocal = 'http://localhost:8080'
-const urlpublica = 'https://quarrytodobackend-production.up.railway.app'
-
 export function VistaInicioSesion(){
     let vista = document.createElement('div');
         vista.id = "inicioSesion"
@@ -31,7 +28,7 @@ export function VistaInicioSesion(){
 
 async function ConsultaCredenciales(json) {
     try {
-      const response = await fetch(urlLocal+'/usuarios/iniciarSesion', {
+      const response = await fetch(window.urlWeb+'/usuarios/iniciarSesion', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
